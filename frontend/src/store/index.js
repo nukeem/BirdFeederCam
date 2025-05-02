@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 
 export const useCameraStore = defineStore('camera', {
   state: () => ({
@@ -18,7 +19,7 @@ export const useCameraStore = defineStore('camera', {
   actions: {
     async fetchStats() {
       try {
-        const response = await axios.get('/api/stats');
+        const response = await axios.get(`${API_BASE_URL}/api/stats`);
         this.stats = response.data;
       } catch (error) {
         console.error('Error fetching stats:', error);
@@ -27,7 +28,7 @@ export const useCameraStore = defineStore('camera', {
 
     async fetchClips() {
       try {
-        const response = await axios.get('/api/clips');
+        const response = await axios.get(`${API_BASE_URL}/api/clips`);
         this.clips = response.data;
       } catch (error) {
         console.error('Error fetching clips:', error);
@@ -36,7 +37,7 @@ export const useCameraStore = defineStore('camera', {
 
     async fetchConfig() {
       try {
-        const response = await axios.get('/api/config');
+        const response = await axios.get(`${API_BASE_URL}/api/config`);
         this.config = response.data;
       } catch (error) {
         console.error('Error fetching config:', error);
@@ -45,7 +46,7 @@ export const useCameraStore = defineStore('camera', {
 
     async updateConfig(config) {
       try {
-        const response = await axios.post('/api/config', config);
+        const response = await axios.post(`${API_BASE_URL}/api/config`, config);
         this.config = response.data;
       } catch (error) {
         console.error('Error updating config:', error);
@@ -54,7 +55,7 @@ export const useCameraStore = defineStore('camera', {
 
     async cleanupClips(days) {
       try {
-        await axios.post('/api/cleanup', { days });
+        await axios.post(`${API_BASE_URL}/api/cleanup`, { days });
         this.fetchClips();
       } catch (error) {
         console.error('Error cleaning up clips:', error);
