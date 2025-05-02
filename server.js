@@ -18,15 +18,25 @@ app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 let camera = null;
 
 // API Routes
-app.get('/api/stats', async (req, res) => {
-    try {
-        const stats = await BirdFeederCamera.getStats();
-        res.json(stats);
-    } catch (error) {
-        console.error('Error getting stats:', error);
-        res.status(500).json({ error: 'Failed to get stats' });
-    }
+app.get('/api/stream', (req, res) => {
+    res.setHeader('Content-Type', 'multipart/x-mixed-replace; boundary=frame');
+    
+    // Start video stream
+    const stream = raspivid({
+        output: res,
+        width: 1280,
+        height: 720,
+        format: 'mjpeg',
+        timeout: 0 // Continuous stream
+    });
+
+    // Handle client disconnect
+    req.on('close', () => {
+        stream.kill();
+    });
 });
+
+app.get('/api/stats', async (req, res) => {
 
 app.get('/api/clips', async (req, res) => {
     try {

@@ -1,8 +1,14 @@
 <template>
   <div class="home">
     <div class="camera-container">
-      <div class="video-placeholder">
-        <h2>Live Feed</h2>
+      <h2>Live Feed</h2>
+      <video
+        ref="videoPlayer"
+        autoplay
+        playsinline
+        class="live-stream"
+      ></video>
+      <div class="status-indicator">
         <p v-if="store.isRecording">Recording in progress...</p>
         <p v-else>Motion detection active</p>
       </div>
@@ -29,10 +35,12 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref, onBeforeUnmount } from 'vue'
 import { useCameraStore } from '../store'
+import { API_BASE_URL } from '../config/api'
 
 const store = useCameraStore()
+const videoPlayer = ref(null)
 
 onMounted(async () => {
   await store.fetchClips()
@@ -42,11 +50,52 @@ onMounted(async () => {
     store.fetchClips()
   }, 60000) // Refresh every minute
 
-  onUnmounted(() => clearInterval(interval))
+  // Start video stream
+  if (videoPlayer.value) {
+    videoPlayer.value.src = `${API_BASE_URL}/api/stream`;
+  }
+
+  onUnmounted(() => {
+    clearInterval(interval)
+    if (videoPlayer.value) {
+      videoPlayer.value.src = '';
+    }
+  })
 })
 </script>
 
 <style scoped>
+.camera-container {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.live-stream {
+  width: 100%;
+  height: 720px;
+  object-fit: cover;
+  background: #000;
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+}
+
 .home {
   padding: 20px;
 }
