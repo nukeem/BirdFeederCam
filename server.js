@@ -17,23 +17,39 @@ app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 // Initialize camera instance
 let camera = null;
 
+// Initialize camera
+try {
+    camera = new BirdFeederCamera();
+    await camera.initialize();
+    console.log('Camera initialized successfully');
+} catch (error) {
+    console.error('Error initializing camera:', error);
+}
+
 // API Routes
 app.get('/api/stream', (req, res) => {
     res.setHeader('Content-Type', 'multipart/x-mixed-replace; boundary=frame');
     
-    // Start video stream
-    const stream = raspivid({
-        output: res,
-        width: 1280,
-        height: 720,
-        format: 'mjpeg',
-        timeout: 0 // Continuous stream
-    });
+    try {
+        // Start video stream
+        const stream = raspivid({
+            output: res,
+            width: 1280,
+            height: 720,
+            format: 'mjpeg',
+            timeout: 0, // Continuous stream
+            bitrate: 1000000, // 1Mbps
+            fps: 15
+        });
 
-    // Handle client disconnect
-    req.on('close', () => {
-        stream.kill();
-    });
+        // Handle client disconnect
+        req.on('close', () => {
+            stream.kill();
+        });
+    } catch (error) {
+        console.error('Error starting video stream:', error);
+        res.status(500).send('Error starting video stream');
+    }
 });
 
 app.get('/api/stats', async (req, res) => {
@@ -71,20 +87,33 @@ app.get('/api/config', (req, res) => {
 app.post('/api/config', (req, res) => {
     const { cleanupDays, motionSensitivity, captureDelay, clipDuration } = req.body;
     
-    if (camera) {
-        camera.motionDetector.sensitivity = motionSensitivity;
-        // Other settings can be updated similarly
-    }
-    
-    res.json({
-        message: 'Settings updated successfully',
-        settings: {
-            cleanupDays,
-            motionSensitivity,
-            captureDelay,
-            clipDuration
+    try {
+        // Update environment variables
+        process.env.CLEANUP_DAYS = cleanupDays;
+        process.env.MOTION_SENSITIVITY = motionSensitivity;
+        process.env.CAPTURE_DELAY = captureDelay;
+        process.env.CLIP_DURATION = clipDuration;
+        
+        // Update camera configuration if it exists
+        if (camera) {
+            camera.motionDetector.threshold = motionSensitivity / 100;
+            camera.CAPTURE_DELAY = captureDelay;
+            camera.CLIP_DURATION = clipDuration;
         }
-    });
+        
+        res.json({
+            message: 'Settings updated successfully',
+            settings: {
+                cleanupDays,
+                motionSensitivity,
+                captureDelay,
+                clipDuration
+            }
+        });
+    } catch (error) {
+        console.error('Error updating settings:', error);
+        res.status(500).json({ error: 'Failed to update settings' });
+    }
 });
 
 app.post('/api/cleanup', async (req, res) => {
