@@ -57,6 +57,14 @@ app.get('/api/stream', (req, res) => {
 });
 
 app.get('/api/stats', async (req, res) => {
+    try {
+        const stats = await BirdFeederCamera.getStats();
+        res.json(stats);
+    } catch (error) {
+        console.error('Error getting stats:', error);
+        res.status(500).json({ error: 'Failed to get stats' });
+    }
+});
 
 app.get('/api/clips', async (req, res) => {
     try {
