@@ -10,17 +10,17 @@
     "dev:full": "concurrently \"npm run dev\" \"npm run client\""
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "axios": "^1.6.5",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "raspivid": "^0.0.2",
-    "motion-observer": "^1.0.0",
-    "sqlite3": "^5.1.6",
+    "express": "^4.18.2",
+    "motion-observer": "^1.0.1",
     "node-telegram-bot-api": "^0.60.0",
-    "axios": "^1.6.5"
+    "raspivid": "^0.0.2",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.2"
   }
 }
