@@ -18,13 +18,17 @@ app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 let camera = null;
 
 // Initialize camera
-try {
-    camera = new BirdFeederCamera();
-    await camera.initialize();
-    console.log('Camera initialized successfully');
-} catch (error) {
-    console.error('Error initializing camera:', error);
+async function initializeCamera() {
+    try {
+        camera = new BirdFeederCamera();
+        await camera.initialize();
+        console.log('Camera initialized successfully');
+    } catch (error) {
+        console.error('Error initializing camera:', error);
+    }
 }
+
+initializeCamera();
 
 // API Routes
 app.get('/api/stream', (req, res) => {
@@ -130,10 +134,6 @@ app.post('/api/cleanup', async (req, res) => {
 // Start the server
 const startServer = async () => {
     try {
-        // Initialize the camera
-        camera = new BirdFeederCamera();
-        await camera.initialize();
-
         // Start the server
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
@@ -144,4 +144,15 @@ const startServer = async () => {
     }
 };
 
-startServer();
+// Initialize camera and start server
+async function startApplication() {
+    try {
+        await initializeCamera();
+        startServer();
+    } catch (error) {
+        console.error('Error starting application:', error);
+        process.exit(1);
+    }
+}
+
+startApplication();

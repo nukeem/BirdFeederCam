@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, onBeforeUnmount } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useCameraStore } from '../store'
 import { API_BASE_URL } from '../config/api'
 
