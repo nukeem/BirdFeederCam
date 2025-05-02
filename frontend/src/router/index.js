@@ -1,23 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import Settings from '../views/Settings.vue'
-import Stats from '../views/Stats.vue'
+import BirdFeederHome from '../views/BirdFeederHome.vue'
+import BirdFeederSettings from '../views/BirdFeederSettings.vue'
+import BirdFeederStats from '../views/BirdFeederStats.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'BirdFeederHome',
+    component: BirdFeederHome
   },
   {
     path: '/settings',
-    name: 'Settings',
-    component: Settings
+    name: 'BirdFeederSettings',
+    component: BirdFeederSettings
   },
   {
     path: '/stats',
-    name: 'Stats',
-    component: Stats
+    name: 'BirdFeederStats',
+    component: BirdFeederStats
   }
 ]
 

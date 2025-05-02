@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import axios from 'axios'
 
 export const useCameraStore = defineStore('camera', {
   state: () => ({
@@ -45,7 +46,7 @@ export const useCameraStore = defineStore('camera', {
     async updateConfig(config) {
       try {
         const response = await axios.post('/api/config', config);
-        this.config = response.data.settings;
+        this.config = response.data;
       } catch (error) {
         console.error('Error updating config:', error);
       }
@@ -53,7 +54,7 @@ export const useCameraStore = defineStore('camera', {
 
     async cleanupClips(days) {
       try {
-        const response = await axios.post('/api/cleanup', { days });
+        await axios.post('/api/cleanup', { days });
         this.fetchClips();
       } catch (error) {
         console.error('Error cleaning up clips:', error);

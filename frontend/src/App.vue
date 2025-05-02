@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <nav class="navbar">
-      <router-link to="/" class="nav-link">Home</router-link>
-      <router-link to="/stats" class="nav-link">Statistics</router-link>
-      <router-link to="/settings" class="nav-link">Settings</router-link>
+      <router-link to="/" class="nav-link">Bird Feeder Home</router-link>
+      <router-link to="/stats" class="nav-link">Bird Feeder Stats</router-link>
+      <router-link to="/settings" class="nav-link">Bird Feeder Settings</router-link>
     </nav>
     <router-view></router-view>
   </div>

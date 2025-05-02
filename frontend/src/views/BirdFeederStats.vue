@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useCameraStore } from '../store'
 
 const store = useCameraStore()

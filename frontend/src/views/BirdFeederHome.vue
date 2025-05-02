@@ -31,7 +31,6 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
 import { useCameraStore } from '../store'
-import axios from 'axios'
 
 const store = useCameraStore()
 
