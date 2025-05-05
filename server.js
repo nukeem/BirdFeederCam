@@ -2,7 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-const { MotionDetector, BirdFeederCamera } = require('./lib/camera');
+const { initializeCameraImpl } = require('./lib/camera');
+const BirdFeederCamera = require('./lib/bird_feed_camera');
+let cameraImpl = null;
 
 dotenv.config();
 
@@ -17,39 +19,44 @@ app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 // Initialize camera instance
 let camera = null;
 
-// Initialize camera
+// Initialize both camera implementations
 async function initializeCamera() {
     try {
+        // Initialize camera implementation
+        cameraImpl = await initializeCameraImpl();
+        console.log('Camera implementation initialized successfully');
+
+        // Initialize bird feeder camera
         camera = new BirdFeederCamera();
         await camera.initialize();
         console.log('Camera initialized successfully');
+        return true;
     } catch (error) {
         console.error('Error initializing camera:', error);
+        throw error;
     }
 }
 
-initializeCamera();
+// Initialize camera before starting server
+async function startApplication() {
+    try {
+        await initializeCamera();
+        startServer();
+    } catch (error) {
+        console.error('Error starting application:', error);
+        process.exit(1);
+    }
+}
+
+startApplication();
 
 // API Routes
-app.get('/api/stream', (req, res) => {
-    res.setHeader('Content-Type', 'multipart/x-mixed-replace; boundary=frame');
-    
+app.get('/api/stream', async (req, res) => {
     try {
-        // Start video stream
-        const stream = raspivid({
-            output: res,
-            width: 1280,
-            height: 720,
-            format: 'mjpeg',
-            timeout: 0, // Continuous stream
-            bitrate: 1000000, // 1Mbps
-            fps: 15
-        });
-
-        // Handle client disconnect
-        req.on('close', () => {
-            stream.kill();
-        });
+        if (!cameraImpl) {
+            throw new Error('Camera not initialized');
+        }
+        await cameraImpl.startStream(req, res);
     } catch (error) {
         console.error('Error starting video stream:', error);
         res.status(500).send('Error starting video stream');
