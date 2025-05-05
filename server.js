@@ -159,15 +159,3 @@ const startServer = async () => {
     }
 };
 
-// Initialize camera and start server
-async function startApplication() {
-    try {
-        await initializeCamera();
-        startServer();
-    } catch (error) {
-        console.error('Error starting application:', error);
-        process.exit(1);
-    }
-}
-
-startApplication();
