@@ -75,7 +75,10 @@ app.get('/api/stats', async (req, res) => {
 
 app.get('/api/clips', async (req, res) => {
     try {
-        const clips = await BirdFeederCamera.getClips();
+        if (!camera) {
+            throw new Error('Camera not initialized');
+        }
+        const clips = await camera.getClips();
         res.json(clips);
     } catch (error) {
         console.error('Error getting clips:', error);
