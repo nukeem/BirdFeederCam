@@ -18,6 +18,7 @@
     "motion": "^12.9.4",
     "motion-observer": "^1.0.1",
     "node-telegram-bot-api": "^0.60.0",
+    "pi-camera-connect": "^0.3.4",
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
